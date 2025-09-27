@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Music Organizer — Mood & Weather</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa4b2; --accent:#7dd3fc;
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      background: linear-gradient(180deg,#071123 0%, #07182a 60%);
+      color:#e6eef6;
+      padding:28px;
+      -webkit-font-smoothing:antialiased;
+    }
+    .app{
+      max-width:1000px;
+      margin:0 auto;
+    }
+    header{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      margin-bottom:20px;
+    }
+    h1{margin:0;font-size:20px;letter-spacing:0.2px}
+    .controls{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--radius);
+      padding:14px;
+      box-shadow: 0 6px 28px rgba(3,7,18,0.5);
+    }
+    .panel{display:flex;gap:12px;align-items:center}
+    input[type="text"], select{
+      background:var(--glass);
+      border:1px solid rgba(255,255,255,0.04);
+      color:var(--muted);
+      padding:10px 12px;
+      border-radius:10px;
+      outline:none;
+      min-width:180px;
+    }
+    button{
+      background:linear-gradient(90deg,var(--accent), #60a5fa);
+      border:none;
+      color:#022027;
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .small{padding:8px 10px;font-size:13px}
+    .muted{color:var(--muted); font-size:13px}
+    .layout{
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:16px;
+      margin-top:18px;
+    }
+    .songs-list{display:grid;gap:10px}
+    .song{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:10px;
+      border-radius:12px;
+      background: rgba(255,255,255,0.01);
+      border: 1px solid rgba(255,255,255,0.02);
+    }
+    .song .meta{flex:1; min-width:0}
+    .title{font-weight:700; margin-bottom:4px; font-size:15px}
+    .sub{font-size:13px;color:var(--muted)}
+    .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+    .tag{font-size:12px;padding:4px 7px;border-radius:999px;background:rgba(255,255,255,0.02);color:var(--muted)}
+    .actions{display:flex;gap:8px;align-items:center}
+    .like{background:none;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;cursor:pointer;color:var(--muted)}
+    .playlist{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .playlist button{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px;border-radius:8px;cursor:pointer}
+    audio{width:100%}
+    .right-card{position:sticky; top:28px;}
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr; }
+      .right-card{position:static}
+    }
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>🎧 Music Organizer — Recommend by Mood & Weather</h1>
+      <div class="muted" style="margin-left:auto">Local demo • no external libs</div>
+    </header>
+
+    <div class="card">
+      <div class="controls">
+        <div class="panel">
+          <label class="muted" style="margin-right:8px">Mood</label>
+          <select id="moodSelect">
+            <option value="">— pick mood —</option>
+            <option value="happy">Happy</option>
+            <option value="sad">Sad</option>
+            <option value="energetic">Energetic</option>
+            <option value="calm">Calm</option>
+            <option value="romantic">Romantic</option>
+            <option value="angry">Angry</option>
+          </select>
+          <input id="moodText" type="text" placeholder="or enter mood (e.g., cozy, chill)" />
+          <button id="setMoodBtn" class="small">Set Mood</button>
+        </div>
+
+        <div class="panel">
+          <label class="muted" style="margin-right:8px">Weather</label>
+          <button id="getWeatherBtn" class="small">Detect Weather (Location)</button>
+          <div id="weatherHint" class="muted" style="margin-left:8px">—</div>
+        </div>
+
+        <div class="panel" style="margin-left:auto">
+          <button id="recommendBtn" class="small">Recommend</button>
+          <button id="resetBtn" class="small" style="background:#ffb4a2;color:#2b0400">Reset Likes</button>
+        </div>
+      </div>
+
+      <div class="muted" style="margin-top:8px">Tip: click "Detect Weather" and allow browser location to mix weather into the recommendation score.</div>
+    </div>
+
+    <div class="layout">
+      <div>
+        <div class="card" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Songs</strong>
+            <div class="playlist">
+              <button id="showLiked">Show Liked</button>
+              <button id="showAll">Show All</button>
+            </div>
+          </div>
+          <div id="songs" class="songs-list" style="margin-top:12px"></div>
+        </div>
+
+        <div class="card" id="playlistCard">
+          <strong>Playlist</strong>
+          <div id="playlist" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <div class="card right-card">
+        <strong>Recommendation Engine</strong>
+        <div class="muted" style="margin-top:8px">
+          Score = mood matches ×2 + weather match ×1 + liked boost. Songs are sorted by score.
+        </div>
+        <div style="margin-top:12px">
+          <label class="muted">Current Mood:</label>
+          <div id="currentMood" class="muted">—</div>
+          <label class="muted" style="margin-top:10px;display:block">Current Weather Tag:</label>
+          <div id="currentWeather" class="muted">—</div>
+        </div>
+        <div style="margin-top:12px">
+          <audio id="player" controls src=""></audio>
+        </div>
+      </div>
+    </div>
+
+    <footer>Replace the demo songs with your backend or integrate with Spotify/YouTube APIs for real previews. For weather: supply OpenWeatherMap API key.</footer>
+  </div>
+
+  <script>
+    // ===== CONFIG: Replace with your OpenWeatherMap API key if you want weather detection =====
+    const OWM_API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY'; // <-- replace or leave empty to disable weather
+
+    // ===== Sample song DB (expandable) =====
+    const SAMPLE_SONGS = [
+      { id: 's1', title: 'Sunny Days', artist: 'The Sunliners', genres: ['pop'], moods: ['happy','energetic'], weatherTags: ['clear','clouds'], url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+      { id: 's2', title: 'Rainy Window', artist: 'Mellow Beats', genres: ['lo-fi'], moods: ['calm','sad','cozy'], weatherTags: ['rain','clouds'], url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+      { id: 's3', title: 'Night Drive', artist: 'Synth Trails', genres: ['synth','electronic'], moods: ['calm','romantic'], weatherTags: ['clear','fog'], url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+      { id: 's4', title: 'Pump It Up', artist: 'Energy Crew', genres: ['edm'], moods: ['energetic','happy'], weatherTags: ['clear'], url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+      { id: 's5', title: 'Blue Minds', artist: 'Soft Strings', genres: ['classical'], moods: ['sad','calm'], weatherTags: ['rain','snow'], url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' }
+    ];
+
+    // ===== Local storage keys =====
+    const STORAGE = { SONGS: 'mo_songs_v1', LIKES: 'mo_likes_v1', PLAYLIST: 'mo_playlist_v1' };
+
+    // ===== App state =====
+    let songs = []; // loaded / from localStorage
+    let likes = new Set();
+    let playlist = [];
+    let currentMood = '';
+    let currentWeatherTag = '';
+
+    // ===== Dom refs =====
+    const songsEl = document.getElementById('songs');
+    const playlistEl = document.getElementById('playlist');
+    const player = document.getElementById('player');
+    const currentMoodEl = document.getElementById('currentMood');
+    const currentWeatherEl = document.getElementById('currentWeather');
+    const weatherHint = document.getElementById('weatherHint');
+
+    // ===== Init =====
+    function loadState(){
+      const savedSongs = localStorage.getItem(STORAGE.SONGS);
+      songs = savedSongs ? JSON.parse(savedSongs) : SAMPLE_SONGS.slice();
+      const savedLikes = JSON.parse(localStorage.getItem(STORAGE.LIKES) || '[]');
+      likes = new Set(savedLikes);
+      playlist = JSON.parse(localStorage.getItem(STORAGE.PLAYLIST) || '[]');
+    }
+    function saveLikes(){ localStorage.setItem(STORAGE.LIKES, JSON.stringify(Array.from(likes))); }
+    function savePlaylist(){ localStorage.setItem(STORAGE.PLAYLIST, JSON.stringify(playlist)); }
+    function renderSongs(list = songs){
+      songsEl.innerHTML = '';
+      if(!list.length){ songsEl.innerHTML = '<div class="muted">No songs found.</div>'; return; }
+      list.forEach(s=>{
+        const div = document.createElement('div');
+        div.className = 'song';
+        div.innerHTML = `
+          <div style="width:56px; height:56px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); display:flex;align-items:center;justify-content:center;font-weight:700">
+            🎵
+          </div>
+          <div class="meta">
+            <div class="title">${escapeHtml(s.title)}</div>
+            <div class="sub">${escapeHtml(s.artist)}</div>
+            <div class="tags">${(s.genres||[]).map(g=>`<span class="tag">${g}</span>`).join('')}${(s.moods||[]).map(m=>`<span class="tag">${m}</span>`).join('')}</div>
+          </div>
+          <div class="actions">
+            <button class="small" data-play="${s.id}">Play</button>
+            <button class="like" data-like="${s.id}">${ likes.has(s.id) ? '♥ Liked' : '♡ Like' }</button>
+            <button class="small" data-add="${s.id}">Add</button>
+          </div>
+        `;
+        songsEl.appendChild(div);
+      });
+    }
+    function renderPlaylist(){
+      playlistEl.innerHTML = '';
+      if(!playlist.length){ playlistEl.innerHTML = '<div class="muted">No songs in playlist.</div>'; return; }
+      playlist.forEach(id=>{
+        const s = songs.find(x=>x.id===id);
+        if(!s) return;
+        const div = document.createElement('div');
+        div.className = 'song';
+        div.style.marginBottom='8px';
+        div.innerHTML = `
+          <div style="width:46px; height:46px; border-radius:8px; display:flex;align-items:center;justify-content:center">🎧</div>
+          <div class="meta"><div class="title">${escapeHtml(s.title)}</div><div class="sub">${escapeHtml(s.artist)}</div></div>
+          <div class="actions">
+            <button class="small" data-play="${s.id}">Play</button>
+            <button class="like" data-remove="${s.id}">Remove</button>
+          </div>
+        `;
+        playlistEl.appendChild(div);
+      });
+    }
+
+    // ===== Utils =====
+    function escapeHtml(str = '') {
+      return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    // Map OpenWeatherMap "weather[0].main" to our weather tags
+    function weatherMainToTag(main){
+      const m = main ? main.toLowerCase() : '';
+      if(m.includes('clear')) return 'clear';
+      if(m.includes('cloud')) return 'clouds';
+      if(m.includes('rain') || m.includes('drizzle')) return 'rain';
+      if(m.includes('thunder')) return 'storm';
+      if(m.includes('snow')) return 'snow';
+      if(m.includes('mist') || m.includes('haze') || m.includes('fog')) return 'fog';
+      return 'unknown';
+    }
+
+    // Recommendation scoring: mood match x2 + weather match x1 + liked boost
+    function scoreSong(song, mood, weatherTag){
+      let score = 0;
+      if(!mood && !weatherTag) return score;
+      if(mood){
+        const m = mood.toLowerCase();
+        const moods = (song.moods||[]).map(x=>x.toLowerCase());
+        // exact mood matches
+        if(moods.includes(m)) score += 2;
+        // partial substring match (cozy ~ calm)
+        for(const mm of moods) if(mm.includes(m) || m.includes(mm)) score += 1;
+      }
+      if(weatherTag){
+        const tags = (song.weatherTags||[]).map(x=>x.toLowerCase());
+        if(tags.includes(weatherTag)) score += 1;
+      }
+      if(likes.has(song.id)) score += 1.5; // small boost for liked songs
+      // small random tie-breaker
+      score += Math.random() * 0.01;
+      return score;
+    }
+
+    function recommend(){
+      // compute scores and sort
+      const mood = currentMood.trim().toLowerCase();
+      const weatherTag = currentWeatherTag;
+      const scored = songs.map(s => ({s, score: scoreSong(s, mood, weatherTag)}));
+      scored.sort((a,b)=>b.score - a.score);
+      // show top N (all in UI but sorted)
+      renderSongs(scored.map(x=>x.s));
+      // update right panel details
+      currentMoodEl.textContent = currentMood || '—';
+      currentWeatherEl.textContent = currentWeatherTag || '—';
+    }
+
+    // ===== Event handling (delegation) =====
+    document.addEventListener('click', (ev)=>{
+      const playId = ev.target.getAttribute('data-play');
+      const likeId = ev.target.getAttribute('data-like');
+      const addId = ev.target.getAttribute('data-add');
+      const removeId = ev.target.getAttribute('data-remove');
+      if(playId){
+        const s = songs.find(x=>x.id===playId);
+        if(s){ player.src = s.url; player.play(); }
+      } else if(likeId){
+        if(likes.has(likeId)) likes.delete(likeId); else likes.add(likeId);
+        saveLikes(); renderSongs(); renderPlaylist();
+      } else if(addId){
+        if(!playlist.includes(addId)) playlist.push(addId);
+        savePlaylist(); renderPlaylist();
+      } else if(removeId){
+        playlist = playlist.filter(x=>x!==removeId);
+        savePlaylist(); renderPlaylist();
+      }
+    });
+
+    // ===== Controls wiring =====
+    document.getElementById('moodSelect').addEventListener('change', (e)=>{
+      document.getElementById('moodText').value = e.target.value;
+    });
+    document.getElementById('setMoodBtn').addEventListener('click', ()=>{
+      currentMood = (document.getElementById('moodText').value || '').trim();
+      currentMoodEl.textContent = currentMood || '—';
+    });
+
+    document.getElementById('recommendBtn').addEventListener('click', ()=> {
+      // if user typed mood in select/text, use it
+      currentMood = (document.getElementById('moodText').value || '').trim() || document.getElementById('moodSelect').value || '';
+      recommend();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', ()=>{
+      likes = new Set(); saveLikes(); renderSongs(); renderPlaylist();
+    });
+
+    document.getElementById('showLiked').addEventListener('click', ()=>{
+      const liked = songs.filter(s=>likes.has(s.id));
+      renderSongs(liked);
+    });
+    document.getElementById('showAll').addEventListener('click', ()=> renderSongs());
+
+    // Weather detection (uses Geolocation + OpenWeatherMap)
+    document.getElementById('getWeatherBtn').addEventListener('click', async ()=>{
+      if(!navigator.geolocation){
+        alert('Geolocation not supported by your browser.');
+        return;
+      }
+      weatherHint.textContent = 'Requesting location...';
+      navigator.geolocation.getCurrentPosition(async (pos)=>{
+        const lat = pos.coords.latitude, lon = pos.coords.longitude;
+        if(!OWM_API_KEY || OWM_API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY'){
+          weatherHint.textContent = 'No API key set — provide OpenWeatherMap key to fetch weather.';
+          currentWeatherTag = '';
+          currentWeatherEl.textContent = '—';
+          return;
+        }
+        weatherHint.textContent = 'Fetching weather...';
+        try{
+          const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OWM_API_KEY}&units=metric`);
+          if(!res.ok) throw new Error('weather fetch failed');
+          const data = await res.json();
+          const main = data.weather && data.weather[0] && data.weather[0].main ? data.weather[0].main : '';
+          currentWeatherTag = weatherMainToTag(main);
+          weatherHint.textContent = `${main} — ${data.name || ''}`;
+          currentWeatherEl.textContent = currentWeatherTag;
+          // run a new recommendation if mood present
+          recommend();
+        } catch(err){
+          console.error(err);
+          weatherHint.textContent = 'Failed to fetch weather.';
+          currentWeatherTag = '';
+          currentWeatherEl.textContent = '—';
+        }
+      }, (err)=>{
+        weatherHint.textContent = 'Location permission denied or error.';
+        currentWeatherTag = '';
+        currentWeatherEl.textContent = '—';
+      }, { enableHighAccuracy: false, timeout:10000 });
+    });
+
+    // ===== Boot =====
+    loadState();
+    renderSongs();
+    renderPlaylist();
+
+    // restore UI state placeholders
+    currentMoodEl.textContent = '—';
+    currentWeatherEl.textContent = '—';
+
+    // small helper for weather mapping in client
+    function weatherMainToTag(main){
+      const m = main ? main.toLowerCase() : '';
+      if(m.includes('clear')) return 'clear';
+      if(m.includes('cloud')) return 'clouds';
+      if(m.includes('rain')||m.includes('drizzle')) return 'rain';
+      if(m.includes('thunder')) return 'storm';
+      if(m.includes('snow')) return 'snow';
+      if(m.includes('mist')||m.includes('haze')||m.includes('fog')) return 'fog';
+      return 'unknown';
+    }
+
+    // expose for debugging
+    window.__MO = { songs, likes, playlist, recommend };
+
+  </script>
+</body>
+</html>
