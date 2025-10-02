@@ -1,0 +1,41 @@
+:root{
+  --bg:#0f1724; --card:#0b1220; --muted:#9aa4b2; --accent:#7dd3fc;
+  --glass: rgba(255,255,255,0.03);
+  --radius:14px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background: linear-gradient(180deg,#071123 0%, #07182a 60%);
+  color:#e6eef6;
+  padding:28px;
+  -webkit-font-smoothing:antialiased;
+}
+.app{max-width:1000px;margin:0 auto;}
+header{display:flex;gap:16px;align-items:center;margin-bottom:20px;}
+h1{margin:0;font-size:20px;letter-spacing:0.2px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--radius);padding:14px;box-shadow: 0 6px 28px rgba(3,7,18,0.5);}
+.panel{display:flex;gap:12px;align-items:center}
+input[type="text"], select{background:var(--glass);border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:10px 12px;border-radius:10px;outline:none;min-width:180px;}
+button{background:linear-gradient(90deg,var(--accent), #60a5fa);border:none;color:#022027;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600;}
+.small{padding:8px 10px;font-size:13px}
+.muted{color:var(--muted); font-size:13px}
+.layout{display:grid;grid-template-columns: 1fr 360px;gap:16px;margin-top:18px;}
+.songs-list{display:grid;gap:10px}
+.song{display:flex;gap:12px;align-items:center;padding:10px;border-radius:12px;background: rgba(255,255,255,0.01);border: 1px solid rgba(255,255,255,0.02);}
+.song .meta{flex:1; min-width:0}
+.title{font-weight:700; margin-bottom:4px; font-size:15px}
+.sub{font-size:13px;color:var(--muted)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.tag{font-size:12px;padding:4px 7px;border-radius:999px;background:rgba(255,255,255,0.02);color:var(--muted)}
+.actions{display:flex;gap:8px;align-items:center}
+.like{background:none;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;cursor:pointer;color:var(--muted)}
+.playlist{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
+.playlist button{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px;border-radius:8px;cursor:pointer}
+audio{width:100%}
+.right-card{position:sticky; top:28px;}
+@media (max-width:900px){.layout{grid-template-columns:1fr;} .right-card{position:static}}
+footer{margin-top:20px;color:var(--muted);font-size:13px}

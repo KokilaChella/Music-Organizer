@@ -1,21 +1,89 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <title>Music Organizer</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Music Organizer — Mood & Weather</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Music Organizer</h1>
-  <form id="songForm">
-    <input type="text" id="title" placeholder="Title" required>
-    <input type="text" id="artist" placeholder="Artist" required>
-    <input type="text" id="album" placeholder="Album">
-    <input type="text" id="genre" placeholder="Genre">
-    <input type="number" id="year" placeholder="Year">
-    <button type="submit">Add Song</button>
-  </form>
+  <div class="app">
+    <header>
+      <h1>🎧 Music Organizer — Recommend by Mood & Weather</h1>
+      <div class="muted" style="margin-left:auto">Local demo • no external libs</div>
+    </header>
 
-  <div id="songList"></div>
+    <div class="card">
+      <div class="controls">
+        <div class="panel">
+          <label class="muted" style="margin-right:8px">Mood</label>
+          <select id="moodSelect">
+            <option value="">— pick mood —</option>
+            <option value="happy">Happy</option>
+            <option value="sad">Sad</option>
+            <option value="energetic">Energetic</option>
+            <option value="calm">Calm</option>
+            <option value="romantic">Romantic</option>
+            <option value="angry">Angry</option>
+          </select>
+          <input id="moodText" type="text" placeholder="or enter mood (e.g., cozy, chill)" />
+          <button id="setMoodBtn" class="small">Set Mood</button>
+        </div>
+
+        <div class="panel">
+          <label class="muted" style="margin-right:8px">Weather</label>
+          <button id="getWeatherBtn" class="small">Detect Weather (Location)</button>
+          <div id="weatherHint" class="muted" style="margin-left:8px">—</div>
+        </div>
+
+        <div class="panel" style="margin-left:auto">
+          <button id="recommendBtn" class="small">Recommend</button>
+          <button id="resetBtn" class="small" style="background:#ffb4a2;color:#2b0400">Reset Likes</button>
+        </div>
+      </div>
+
+      <div class="muted" style="margin-top:8px">Tip: click "Detect Weather" and allow browser location to mix weather into the recommendation score.</div>
+    </div>
+
+    <div class="layout">
+      <div>
+        <div class="card" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Songs</strong>
+            <div class="playlist">
+              <button id="showLiked">Show Liked</button>
+              <button id="showAll">Show All</button>
+            </div>
+          </div>
+          <div id="songs" class="songs-list" style="margin-top:12px"></div>
+        </div>
+
+        <div class="card" id="playlistCard">
+          <strong>Playlist</strong>
+          <div id="playlist" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <div class="card right-card">
+        <strong>Recommendation Engine</strong>
+        <div class="muted" style="margin-top:8px">
+          Score = mood matches ×2 + weather match ×1 + liked boost. Songs are sorted by score.
+        </div>
+        <div style="margin-top:12px">
+          <label class="muted">Current Mood:</label>
+          <div id="currentMood" class="muted">—</div>
+          <label class="muted" style="margin-top:10px;display:block">Current Weather Tag:</label>
+          <div id="currentWeather" class="muted">—</div>
+        </div>
+        <div style="margin-top:12px">
+          <audio id="player" controls src=""></audio>
+        </div>
+      </div>
+    </div>
+
+    <footer>Replace the demo songs with your backend or integrate with Spotify/YouTube APIs for real previews. For weather: supply OpenWeatherMap API key.</footer>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
