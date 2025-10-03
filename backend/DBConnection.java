@@ -6,7 +6,7 @@ public class DBConnection {
         try {
             String url = "jdbc:mysql://localhost:3306/musicdb";
             String user = "root";
-            String password = "your_password";  // change this
+            String password = "";  // change this
             return DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
             e.printStackTrace();
