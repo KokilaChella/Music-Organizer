@@ -1,0 +1,293 @@
+:root {
+  --bg: #0f1724;
+  --card: #0b1220;
+  --muted: #9aa4b2;
+  --accent: #7dd3fc;
+  --accent-dark: #60a5fa;
+  --error: #ef4444;
+  --success: #10b981;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-focus: var(--accent);
+  --shadow: 0 6px 28px rgba(3, 7, 18, 0.5);
+  --shadow-hover: 0 8px 32px rgba(3, 7, 18, 0.6);
+  --container-bg: rgba(15, 23, 36, 0.95); /* More opaque for higher contrast */
+  --container-glow: rgba(125, 211, 252, 0.05); /* Subtle accent-tinted inner glow */
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  font-size: 16px; /* Base for rem units */
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Lightened gradient: softer navy tones for less "black & dark" feel */
+  background: 
+    radial-gradient(ellipse at center, rgba(15, 23, 36, 0.3) 0%, transparent 50%),
+    linear-gradient(180deg, #0f172a 0%, #1a2332 60%, #253549 100%); /* Lighter mid-tones */
+  color: #e6eef6;
+  position: relative; /* For potential overlays if needed later */
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(125, 211, 252, 0.05) 0%, transparent 50%), /* Slightly lightened glows */
+    radial-gradient(circle at 80% 20%, rgba(96, 165, 250, 0.04) 0%, transparent 50%);
+  pointer-events: none; /* Subtle "stars" or glows for music theme, non-interactive */
+  z-index: -1;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 420px; /* Slightly wider for better balance */
+  padding: 2rem 1rem; /* Increased outer padding for breathing room */
+  /* Higher contrast background: more solid and slightly warmer/lighter */
+  background: linear-gradient(180deg, 
+    rgba(15, 23, 36, 0.95) 0%, 
+    rgba(11, 18, 32, 0.98) 100%,
+    rgba(125, 211, 252, 0.02) 100% /* Faint accent tint at bottom for warmth */
+  );
+  border-radius: 20px; /* Rounded "bubble" effect */
+  box-shadow: 
+    0 20px 60px rgba(3, 7, 18, 0.8), /* Stronger outer shadow for lift */
+    inset 0 1px 0 rgba(255, 255, 255, 0.08), /* Enhanced inner highlight */
+    0 0 0 1px rgba(125, 211, 252, 0.1); /* Subtle accent border for edge definition */
+  backdrop-filter: blur(20px); /* Enhanced glassmorphism for depth */
+  transition: none; /* No transitions for static behavior */
+  border: 1px solid rgba(125, 211, 252, 0.08); /* Defined accent-tinted border */
+  /* No hover rule - container remains static */
+
+}
+
+.auth-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  border: 1px solid var(--border);
+  border-radius: 16px; /* Slightly more rounded */
+  box-shadow: var(--shadow);
+  padding: 2rem; /* Increased for breathing room */
+  backdrop-filter: blur(10px); /* Subtle glassmorphism effect */
+  transition: box-shadow 0.3s ease;
+}
+
+.auth-card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #e6eef6;
+  margin: 0;
+}
+
+input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: #e6eef6;
+  padding: 0.875rem 1rem;
+  border-radius: 12px; /* Slightly larger radius */
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  width: 100%; /* Ensure full width */
+}
+
+input::placeholder {
+  color: var(--muted);
+}
+
+input:focus {
+  border-color: var(--border-focus); /* Accent color border */
+  box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.15); /* Enhanced colored glow (wider, more visible) */
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: var(--accent);
+}
+
+.password-toggle:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button[type="submit"] {
+  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+  border: none;
+  color: #022027;
+  padding: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+button[type="submit"]:hover {
+  transform: translateY(-1px); /* Subtle lift */
+  box-shadow: var(--shadow-hover);
+  background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+}
+
+button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+.loading-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(2, 32, 39, 0.3);
+  border-top: 2px solid #022027;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: none; /* Show via JS on submit */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.links {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.muted {
+  font-size: 0.8125rem; /* 13px */
+  color: var(--muted);
+  margin: 0 0 0.5rem 0;
+}
+
+.forgot {
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-dark);
+  text-decoration: underline;
+}
+
+.msg {
+  margin-top: 1rem;
+  font-size: 0.875rem; /* 14px */
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.msg.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.msg.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.msg.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 1rem 0.5rem; /* Adjusted for mobile */
+    max-width: 100%; /* Full width on small screens */
+    margin: 1rem; /* Extra margin from edges */
+    border-radius: 16px; /* Slightly less rounded on mobile */
+  }
+  
+  .auth-card {
+    padding: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  input, button[type="submit"] {
+    padding: 0.75rem;
+    font-size: 0.9375rem; /* Slightly smaller on mobile */
+  }
+}
