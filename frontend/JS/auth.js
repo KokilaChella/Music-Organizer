@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
       msg.style.color = "#4ade80";
 
       setTimeout(() => {
-        window.location.href = "login.html";
+        window.location.href = "../Pages/login.html";
       }, 1500);
     });
   }
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("loggedInUser", username);
 
         setTimeout(() => {
-          window.location.href = "index.html"; // redirect to main app
+          window.location.href = "../Pages/home.html"; // redirect to main app
         }, 1500);
       } else {
         msg.textContent = "Incorrect password.";
