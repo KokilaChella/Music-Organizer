@@ -1,37 +1,23 @@
-  GNU nano 8.6                   DBConnection.java
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.*;
 
 public class DBConnection {
-    public static Connection connect() {
-        try {
-            String url = "jdbc:mysql://localhost:3306/musicdb";
-            String user = "root";
-            String password = "";  // change this
-            return DriverManager.getConnection(url, user, password);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+    private static final String URL = "jdbc:mysql://127.0.0.1:3306/musicdb";
+
+    private static final String USER = "root"; // or your username
+    private static final String PASS = "";     // or your password
+
+    public static void main(String[] args) {
+    Connection c = DBConnection.connect();
+    if(c != null) System.out.println("Connected!");
+    else System.out.println("Failed to connect.");
 }
 
 
-
-
-                 [ Read 16 lines (converted from DOS format) ]
-^G Help      ^O Write Out ^F Where Is  ^K Cut       ^T Execute   ^C Location
-^X Exit      ^R Read File ^\ Replace   ^U Paste     ^J Justify   ^/ Go To Line
-import java.sql.Connection;
-import java.sql.DriverManager;
-
-public class DBConnection {
     public static Connection connect() {
         try {
-            String url = "jdbc:mysql://localhost:3306/musicdb";
-            String user = "root";
-            String password = "";  // change this
-            return DriverManager.getConnection(url, user, password);
+            // Load the MySQL driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return DriverManager.getConnection(URL, USER, PASS);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
